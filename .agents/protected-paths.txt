@@ -1,0 +1,11 @@
+# Đường dẫn agent KHÔNG được ghi vào. Một dòng một chuỗi, so khớp kiểu "contains",
+# không phân biệt hoa thường, dấu \ được chuẩn hoá thành / trước khi so.
+#
+# File này là phần RIÊNG của project RDBMS. Khi project mở rộng (thêm code app),
+# thêm đường dẫn mới ở đây — KHÔNG sửa guard/GuardCommand.java.
+#
+# Nguồn: AGENTS.md §8 "Cấm (hard rules)".
+
+init.sql
+seed.sql
+/migrations/

@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(rm -rf*)",
+      "Bash(git push --force*)",
+      "Bash(git push *--force*)",
+      "Bash(git clean -f*)",
+      "Bash(git reset --hard*)",
+      "Bash(DROP TABLE*)",
+      "Bash(DROP DATABASE*)",
+      "Bash(TRUNCATE*)",
+      "Write(init.sql)",
+      "Write(seed.sql)",
+      "Write(.agents/guard/*)",
+      "Write(.agents/hooks.json)"
+    ]
+  }
+}

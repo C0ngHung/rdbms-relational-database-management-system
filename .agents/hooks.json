@@ -1,0 +1,16 @@
+{
+  "$schema": "hooks/antigravity-hooks.schema.json",
+  "enabled": true,
+  "PreToolUse": [
+    {
+      "matcher": "run_command",
+      "command": "node .agents/hooks/validate-tool-call.mjs",
+      "timeout": 10
+    },
+    {
+      "matcher": "run_command|shell_exec|git_commit|delete_directory|cloud_sql_update_schema",
+      "command": "java guard/GuardCommand.java",
+      "timeout": 20
+    }
+  ]
+}
