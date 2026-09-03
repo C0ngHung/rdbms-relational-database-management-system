@@ -2,14 +2,16 @@
 
 ## 1. Trọng tâm hiện tại / Current Focus
 
-- Khởi tạo thành công **Memory Bank** cho khóa học RDBMS (6 file cốt lõi).
-- Toàn bộ hạ tầng AI Agent Toolkit (AG Kit) đã được porting, adapt cho SQL và kiểm thử hoàn tất.
-- Sẵn sàng bắt tay vào xây dựng bài học đầu tiên trong lộ trình học tập: **Chương 1 — Data Modeling & Schema Design** (Ticket `RDBMS-001`).
+- Đã hoàn thành biên soạn toàn diện bài học nền tảng: **Part 1: Các Khái Niệm Cơ Bản Trong CSDL Quan Hệ - Basic Concepts** (tại `sql-server/Part 1 - Basic Concepts/Part 1 - Basic Concepts.md`).
+- Đã ban hành và tích hợp quy chuẩn định dạng bài học **Format Lesson Rule** (`.agents/rules/format-rule.md`) vào AG Kit registry.
+- Chuẩn bị bước vào các bài học và thực hành schema tiếp theo trong lộ trình: **Chương 1 — Data Modeling, ERD & Chuẩn hóa dữ liệu (1NF → 3NF)** (Ticket `RDBMS-001`).
 
 ---
 
 ## 2. Các thay đổi gần đây / Recent Changes
 
+- **Bài học & Tài liệu học tập**:
+  - Tạo và hoàn thiện tài liệu `sql-server/Part 1 - Basic Concepts/Part 1 - Basic Concepts.md` gồm 8 phần chi tiết, 463 dòng: Thực thể, Bảng, Cột, Hàng, NULL vs NOT NULL, Các loại Khóa (Super/Candidate/Primary/Composite), Khóa ngoại & Toàn vẹn tham chiếu, Các quan hệ 1:1, 1:N, N:M với Junction Table, Sơ đồ ERD và bộ 8 câu hỏi phỏng vấn kèm code SQL, minh họa 4 sơ đồ trực quan (`RDBMS.png`, `1-1.png`, `1-n.png`, `n-n.png`).
 - **Hạ tầng AI Toolkit**:
   - Tạo `AGENTS.md` (Single Source of Truth) định hình các quy chuẩn SQL, toolchain psql/PostgreSQL 16, và danh mục quy tắc cấm kỵ §8.
   - Tạo `CLAUDE.md` và `.github/copilot-instructions.md` đồng bộ tri thức cho các AI client khác.

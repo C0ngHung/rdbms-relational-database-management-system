@@ -40,6 +40,7 @@ rdbms-relational-database-management-system/
 ## 3. Quy chuẩn viết SQL (SQL Conventions)
 
 ### 3.1. Naming Conventions
+
 - **Tên bảng & view**: `snake_case`, danh từ số nhiều (e.g. `users`, `order_items`, `accounts`).
 - **Tên cột**: `snake_case`, mô tả rõ ràng (e.g. `user_id`, `created_at`, `total_amount`).
 - **Khóa chính**: Cột đơn đặt là `id` hoặc `<table_singular>_id`. Khóa phụ đặt là `<referenced_table_singular>_id`.
@@ -54,11 +55,13 @@ rdbms-relational-database-management-system/
   - Partial index: `idx_<table>_<column>_<filter>` (e.g. `idx_orders_status_pending`)
 
 ### 3.2. Tiêu chuẩn kiểu dữ liệu
+
 - **Tiền tệ, số thập phân tài chính**: Bắt buộc dùng `NUMERIC(p, s)` hoặc `DECIMAL(p, s)`. Tuyệt đối **CẤM** dùng `FLOAT` hoặc `REAL` do sai số dấu phẩy động.
 - **Chuỗi ký tự**: Ưu tiên `TEXT` hoặc `VARCHAR(n)` có giới hạn hợp lý. Không dùng kiểu ký tự cố định `CHAR(n)` trừ khi độ dài luôn không đổi (e.g. mã quốc gia ISO-2 `CHAR(2)`).
 - **Thời gian**: Luôn dùng `TIMESTAMPTZ` (`TIMESTAMP WITH TIME ZONE`) để tránh nhầm lẫn múi giờ.
 
 ### 3.3. An toàn DDL & DML
+
 - **Preview trước khi ghi**: Luôn chạy `SELECT COUNT(*)` với đúng điều kiện `WHERE` trước khi chạy `UPDATE` hoặc `DELETE`.
 - **Không bao giờ chạy lệnh hủy diệt mà không có WHERE**: `DELETE FROM <table>` hoặc `UPDATE <table> SET ...` không có `WHERE` bị chặn nghiêm ngặt theo quy tắc bảo vệ.
 - **Rollback cho DDL**: Mọi script thay đổi cấu trúc bảng trong `migrations/` đều phải đi kèm kịch bản down-migration hoàn chỉnh.
