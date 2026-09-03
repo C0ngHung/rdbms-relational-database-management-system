@@ -1,7 +1,7 @@
 {
   "$schema": "schemas/manifest-lock.schema.json",
   "components": {
-    "ARCHITECTURE.md": "446963f4538aebc25b883d58895814001ff86f8a8bc2a7d1946c4a4973c1e3bb",
+    "ARCHITECTURE.md": "d12a554fbe1461afb15d8ea5564b779b4d9e12361d69d71b5a5d4fea5badbe55",
     "CHANGELOG.md": "c29cb325d278be44ad662d91c86c180cf01c05d008f77cf4b3f0bd42de8c46f8",
     "README.md": "d6a29fbc3367f5ab5739f84bad71710879119d1b697b6a18943dcdad5e2ec654",
     "VERSION": "94bc11e2a5617c66e6d2f849e14be6579c44c90d0f985d80ce4dc96dff46fa94",
@@ -48,6 +48,7 @@
     "rules/code-rules.md": "3e602c516f195ddeb6fb986aa8cead49a0ebae8a48720f738d4642146dd510a5",
     "rules/core-protocol.md": "647becf363128a82e65ed9628f9ab82b0142692825b7f94f0e264ad6d1cacba2",
     "rules/design-rules.md": "73ee8f120e85939d04a7153bd7d2336cfb7d3025c9c6fc4b9003eca97e3f228b",
+    "rules/format-rule.md": "dffc70b0bdd1305f9487c3e9ddc9afa8fd5bc72bd61e2fa9270e1676fcc788fe",
     "rules/git-commit-msg.md": "3d2bea0a98d2ec677193afd3cf518ef0f0afcb9243aa18e2c268b2a7d82ef187",
     "rules/quick-reference.md": "f077e962ea7ad1a5afc51efca8f3d27c68b895398e0f0f153c118a9cb635593c",
     "rules/request-routing.md": "2e5e04fc7b500e77c41d3875e4cf3769c83243d78dc419e441b2944aceecbb4d",
@@ -236,6 +237,6 @@
     "workflows/verify.md": "2dc26bcbe24c7e71571953da75629521ea3d7a0a444a7101e3601b39864971fc"
   },
   "kitVersion": "2026.8.31",
-  "manifestSha256": "53dc639a41d70ffe4a3502aa6bc51427092ba22340c961cb582fd42530e55c4e",
+  "manifestSha256": "6129135831a23503b5d133ab4446e36ffc39343a070e463311fcd16ab51bff62",
   "schemaVersion": "1.0.0"
 }

@@ -71,6 +71,7 @@ Primary job: preserve **data integrity**, isolate **schema change**, prevent **d
 | Memory bank | `04-memory-bank-documentation` | model_decision |
 | Git commit | `git-commit-msg` | model_decision (khi viết commit) |
 | Output format | `share-rule` | manual (`@share-rule`) |
+| Lesson formatting | `format-rule` | manual (`@format-rule`) |
 
 ---
 

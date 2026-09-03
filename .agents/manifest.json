@@ -462,6 +462,12 @@
       "trigger": "glob",
       "version": "1.0.0"
     },
+    "format-rule": {
+      "path": "rules/format-rule.md",
+      "priority": "P1",
+      "trigger": "manual",
+      "version": "1.0.0"
+    },
     "git-commit-msg": {
       "path": "rules/git-commit-msg.md",
       "priority": "P1",
