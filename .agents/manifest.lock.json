@@ -1,7 +1,7 @@
 {
   "$schema": "schemas/manifest-lock.schema.json",
   "components": {
-    "ARCHITECTURE.md": "acf36ca3df78e5251bcd1077b48bbd71efd510ac9ff5aec9907468d3926fc5a9",
+    "ARCHITECTURE.md": "446963f4538aebc25b883d58895814001ff86f8a8bc2a7d1946c4a4973c1e3bb",
     "CHANGELOG.md": "c29cb325d278be44ad662d91c86c180cf01c05d008f77cf4b3f0bd42de8c46f8",
     "README.md": "d6a29fbc3367f5ab5739f84bad71710879119d1b697b6a18943dcdad5e2ec654",
     "VERSION": "94bc11e2a5617c66e6d2f849e14be6579c44c90d0f985d80ce4dc96dff46fa94",
@@ -44,6 +44,7 @@
     "memory/tech-decisions.md": "001f735f5fbc665c2bfedf3f637336cf3a25b4af7dcccd11739c8aff232e872c",
     "memory/user-preferences.md": "251ac5dea279b0bb18a5107ef599ef718837f5f60317c7728c370e83d74d5d37",
     "rules/00-ai-operating-rules.md": "a26d3387f20cff8ccd0447bf4c537bc642785697b5c79d60e98c81a58f231a21",
+    "rules/04-memory-bank-documentation-rules.md": "e180d047f17940b45361957e854131659efdd82ae96067181c7e5407689ede66",
     "rules/code-rules.md": "3e602c516f195ddeb6fb986aa8cead49a0ebae8a48720f738d4642146dd510a5",
     "rules/core-protocol.md": "647becf363128a82e65ed9628f9ab82b0142692825b7f94f0e264ad6d1cacba2",
     "rules/design-rules.md": "73ee8f120e85939d04a7153bd7d2336cfb7d3025c9c6fc4b9003eca97e3f228b",
@@ -235,6 +236,6 @@
     "workflows/verify.md": "2dc26bcbe24c7e71571953da75629521ea3d7a0a444a7101e3601b39864971fc"
   },
   "kitVersion": "2026.8.31",
-  "manifestSha256": "bc1c00002ee16ceaf4a88427141bb5fe1dca9fd6fa705333bccd82ab5d50e8e8",
+  "manifestSha256": "53dc639a41d70ffe4a3502aa6bc51427092ba22340c961cb582fd42530e55c4e",
   "schemaVersion": "1.0.0"
 }

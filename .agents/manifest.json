@@ -438,6 +438,12 @@
       "trigger": "manual",
       "version": "1.0.0"
     },
+    "04-memory-bank-documentation-rules": {
+      "path": "rules/04-memory-bank-documentation-rules.md",
+      "priority": "P1",
+      "trigger": "model_decision",
+      "version": "1.0.0"
+    },
     "code-rules": {
       "path": "rules/code-rules.md",
       "priority": "P0",

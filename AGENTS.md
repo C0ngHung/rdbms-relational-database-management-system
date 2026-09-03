@@ -68,6 +68,7 @@ Primary job: preserve **data integrity**, isolate **schema change**, prevent **d
 |---|---|---|
 | General AI behavior | `00-ai-operating-rules` | manual (`@00-ai-operating-rules`) |
 | Software dev principles | `software-develop` | manual (`@software-develop`) |
+| Memory bank | `04-memory-bank-documentation` | model_decision |
 | Git commit | `git-commit-msg` | model_decision (khi viết commit) |
 | Output format | `share-rule` | manual (`@share-rule`) |
 
