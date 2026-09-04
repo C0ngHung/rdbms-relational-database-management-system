@@ -17,6 +17,7 @@ updated: 2026-09-04
   - Case Examples: `Example X.png` (e.g. `Example 1.png`, `Example 2.png`)
   - Domain Concepts: Descriptive names (e.g. `CSDL Good.png`, `Insert Anomaly.png`, `Normalization.png`)
 - Relative Markdown linking with percent-encoding for spaces: `./Example%201.png`.
+- Image Captions: Every educational diagram in markdown must have an italicized caption directly beneath it formatted as `*Picture N: Title/Concept — Concise pedagogical explanation of what is shown and why it matters.*` in English.
 
 ## Supported AI platforms (AG Kit)
 - AG Kit **only supports Gemini CLI and Google Antigravity**.
