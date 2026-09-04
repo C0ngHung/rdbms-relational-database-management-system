@@ -14,4 +14,5 @@
 - [project] Component metadata uses SemVer while toolkit releases use CalVer → tech-decisions.md
 - [project] Theory section §3 contains no SQL; full DDL/DQL in §4+ with `[!NOTE]` forward references → tech-decisions.md
 - [project] Diagram assets strictly co-located with corresponding conceptual section → tech-decisions.md
+- [project] KaTeX math block attribute naming convention (PascalCase) → tech-decisions.md
 
