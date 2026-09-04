@@ -15,6 +15,8 @@ Mục đích cốt lõi của chuẩn hóa:
 
 ![Thế nào là một Cơ sở dữ liệu được thiết kế tốt](./CSDL%20Good.png)
 
+*Picture 1: Characteristics of a well-designed database — must satisfy four simultaneous criteria: Completeness (stores all required facts), No Unnecessary Redundancy (no repeated facts), No Anomalies on INSERT/UPDATE/DELETE, and Data Integrity enforced at the storage engine level, not delegated to application code.*
+
 Một hệ thống cơ sở dữ liệu được coi là có thiết kế chất lượng cao khi thỏa mãn đồng thời các tiêu chí sau:
 
 - **Chứa đầy đủ thông tin** (**Completeness**): Đây là điều kiện tiên quyết. Lược đồ phải lưu trữ trọn vẹn mọi dữ kiện nghiệp vụ mà người dùng và ứng dụng yêu cầu.
@@ -56,6 +58,8 @@ Khi một bảng cơ sở dữ liệu chưa được chuẩn hóa (thường g�
 
 ![Bất thường Cập nhật - Update Anomaly](./Update%20Anomaly.png)
 
+*Picture 2: Update Anomaly — The same real-world fact (e.g., a course's start date) is stored in multiple rows. Updating only one copy while missing others leaves the database in an inconsistent state where no single source of truth exists.*
+
 - **Nguyên nhân**: Cùng một thông tin thực tế khách quan (ví dụ: ngày khai giảng của khóa học, số điện thoại của giáo viên) bị lưu lặp đi lặp lại ở nhiều dòng dữ liệu khác nhau.
 - **Hệ quả**: Khi thông tin đó thay đổi (ví dụ: khóa học `Lập trình OOP` đổi lịch khai giảng sang ngày `2026-10-10`), câu lệnh cập nhật bắt buộc phải quét và sửa trên **toàn bộ** các dòng có chứa khóa học đó.
   - Nếu hệ thống gặp sự cố mạng, timeout, hoặc lập trình viên thiếu cẩn trọng khiến chỉ có 1 dòng được cập nhật còn dòng kia giữ nguyên:
@@ -67,6 +71,8 @@ Khi một bảng cơ sở dữ liệu chưa được chuẩn hóa (thường g�
 
 ![Bất thường Chèn - Insert Anomaly](./Insert%20Anomaly.png)
 
+*Picture 3: Insert Anomaly — Two independent entities (Courses and Students) are forced into a single table. A new course cannot be recorded until at least one student enrolls, because the student column is part of the primary key or has a NOT NULL constraint.*
+
 - **Nguyên nhân**: Hai thực thể độc lập (`Courses` và `Students`) bị gộp chung vào một bảng, trong đó khóa chính đòi hỏi phải có sự tham gia của sinh viên.
 - **Hệ quả**: Nhà trường muốn mở một khóa học mới mang tên `Lập trình Python Nâng cao` dự kiến mở vào tháng tới, nhưng hiện tại **chưa có sinh viên nào đăng ký**.
   - Nếu cột `student_name` nằm trong Khóa chính hoặc có ràng buộc `NOT NULL`, hệ thống **hoàn toàn không thể chèn bản ghi mới** cho khóa học này.
@@ -75,6 +81,8 @@ Khi một bảng cơ sở dữ liệu chưa được chuẩn hóa (thường g�
 ### 2.3 Bất thường Xóa (Delete Anomaly)
 
 ![Bất thường Xóa - Delete Anomaly](./Delete%20Anomaly.png)
+
+*Picture 4: Delete Anomaly — Deleting the last enrollment row for a course silently destroys the teacher's contact information stored on the same physical row, even though the teacher still exists in the institution.*
 
 - **Nguyên nhân**: Dữ liệu của thực thể yếu và thực thể mạnh bị ràng buộc cứng ngắc trên cùng một dòng vật lý.
 - **Hệ quả**: 
@@ -91,6 +99,8 @@ Khi một bảng cơ sở dữ liệu chưa được chuẩn hóa (thường g�
 ### 3.1 Định nghĩa Phụ thuộc hàm
 
 ![Nguyên tắc 1 - Mỗi cột chỉ chứa một mục dữ liệu duy nhất](./Principle%201.png)
+
+*Picture 5: Principle 1 (1NF) — Each column must hold exactly one atomic, indivisible value. Storing comma-separated lists, arrays, or repeating groups inside a single cell violates atomicity and makes filtering, indexing, and joining impossible.*
 
 Cho một lược đồ quan hệ $R$, giả sử $X$ và $Y$ là hai tập con các thuộc tính của $R$.
 
@@ -109,6 +119,8 @@ _Ví dụ:_
 
 ![Nguyên tắc 2 - Không được chỉ phụ thuộc một phần của khóa](./Principle%202.png)
 
+*Picture 6: Principle 2 (2NF) — Every non-key attribute must functionally depend on the entire composite primary key, not just a subset of it. A Partial Dependency means the attribute really belongs to a separate entity and should be extracted into its own table.*
+
 - **Phụ thuộc hàm đầy đủ** (**Full Functional Dependency**): Thuộc tính $Y$ phụ thuộc hàm vào tập thuộc tính $X$, và **không phụ thuộc vào bất kỳ tập con thực sự nào của $X$**.
   - Ký hiệu: $X \xrightarrow{\text{full}} Y$.
   - Nếu $X = \{A, B\}$, $Y$ phải cần cả $A$ và $B$ mới xác định được; chỉ biết riêng $A$ hoặc riêng $B$ thì không đủ để xác định $Y$.
@@ -120,7 +132,11 @@ _Ví dụ:_
 
 ![Nguyên tắc 3 - Không có phụ thuộc bắc cầu](./Principle%203.png)
 
+*Picture 7: Principle 3 (3NF) — No non-key attribute may depend on another non-key attribute (transitive chain: PK → A → B). Column B should be derived from or stored in a separate table where A is the primary key.*
+
 ![Nguyên tắc 3.5 - Mọi định thức phải là Super Key](./Principle%203.5.png)
+
+*Picture 8: Principle 3.5 (BCNF — Boyce-Codd Normal Form) — A stricter version of 3NF: every determinant (left-hand side of any functional dependency) must be a Super Key of the table. BCNF eliminates anomalies missed by 3NF when overlapping candidate keys exist.*
 
 - Cho 3 tập thuộc tính $X, Y, Z$. Nếu tồn tại:
   1. $X \rightarrow Y$
@@ -153,6 +169,8 @@ $$\text{student\_id} \xrightarrow{(1)} \text{avg\_score} \xrightarrow{(2)} \text
 
 ![Ví dụ Phụ thuộc bắc cầu - Điểm trung bình và Xếp loại](./Example%201.png)
 
+*Picture 9: Example of Transitive Dependency — In the StudentGrades table, student_id → avg_score → academic_rank forms a two-step chain. When a score is updated, the rank column silently becomes stale, creating a data contradiction within the same row.*
+
 **Giải pháp:** Tách `academic_rank` ra khỏi bảng `StudentGrades`. Có 2 hướng tùy theo nghiệp vụ:
 - **Hướng 1 — Bảng tra cứu (Lookup Table):** Tạo bảng `GradeRanks(min_score, max_score, rank)` lưu quy tắc xếp loại độc lập; `StudentGrades` chỉ giữ `student_id` và `avg_score`, tra cứu xếp loại qua `JOIN`.
 - **Hướng 2 — Tính toán động:** Xóa hoàn toàn cột `academic_rank`, tính trực tiếp bằng `CASE WHEN avg_score >= 8 THEN 'Giỏi' ...` trong câu truy vấn.
@@ -160,6 +178,8 @@ $$\text{student\_id} \xrightarrow{(1)} \text{avg\_score} \xrightarrow{(2)} \text
 Cả 2 hướng đều loại bỏ hoàn toàn chuỗi bắc cầu.
 
 ![Tách bảng loại bỏ phụ thuộc bắc cầu](./Example%202.png)
+
+*Picture 10: Removing the Transitive Dependency — Two valid solutions: (1) Extract a GradeRanks lookup table keyed on score ranges, and JOIN at query time; or (2) Drop academic_rank entirely and compute it on-the-fly with CASE WHEN avg_score >= 8 THEN 'Giỏi' .... Both approaches eliminate the stale-data risk at its source.*
 
 > [!NOTE]
 > Ví dụ về SQL tái cấu trúc cụ thể cho trường hợp phụ thuộc bắc cầu được trình bày chi tiết tại **§4.3 Dạng chuẩn 3 (3NF)** — bao gồm cả trường hợp giáo viên phụ trách và thuộc tính suy diễn (`academic_rank`).
@@ -169,6 +189,8 @@ Cả 2 hướng đều loại bỏ hoàn toàn chuỗi bắc cầu.
 ## 4. Các Dạng Chuẩn Hóa (Normal Forms Progression)
 
 ![Tiến trình chuẩn hóa dữ liệu lũy tiến: 1NF → 2NF → 3NF → 3.5NF (BCNF) → 4NF](./Normalization.png)
+
+*Picture 11: The cumulative normalization hierarchy — each level fully inherits all constraints of the level below it. In practice, most OLTP systems stop at 3NF for an optimal balance between data integrity and query simplicity. Advancing to BCNF or 4NF is warranted only when overlapping candidate keys or independent multi-valued facts are detected.*
 
 Quá trình chuẩn hóa mang tính **lũy tiến** (**Cumulative Hierarchy**): Để đạt được cấp độ chuẩn $N$, lược đồ trước hết bắt buộc phải thỏa mãn tất cả các điều kiện của cấp độ chuẩn $(N-1)$.
 
@@ -481,6 +503,8 @@ Ký hiệu $X \twoheadrightarrow Y$ (**Multi-Valued Dependency — MVD**) đọc
 **Hệ quả:** Để biểu diễn đầy đủ mọi tổ hợp, số dòng cần thiết bằng $M \times N$ (**Tích Descartes — Cartesian Product**), trong đó $M$ là số chứng chỉ IT và $N$ là số ngoại ngữ.
 
 ![Nguyên tắc 4 - Tránh "nô tổ hợp": mỗi dòng chỉ là một tổ hợp duy nhất của các thuộc tính liên quan](./Principle%204.png)
+
+*Picture 12: Principle 4 (4NF) — When a single key independently determines two sets of multi-values (e.g., IT certifications and spoken languages), the table must store every possible pairing — a Cartesian Product of M × N rows. The fix is to split each independent multi-valued fact into its own separate table.*
 
 > Hình trên minh họa chuỗi tổ hợp bùng nổ: Sinh viên A có AWS+English, Azure+English, AWS+Spanish, Azure+Spanish, ... — mỗi cặp `(ITCert × Language)` tạo ra một dòng riêng biệt, dù hai nhóm thuộc tính không hề liên quan.
 
