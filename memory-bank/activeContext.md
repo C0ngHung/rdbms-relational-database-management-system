@@ -12,18 +12,20 @@
 - Đã bổ sung lý giải trực giác sâu sắc:
   - §3.3 Phụ thuộc bắc cầu: Bảng `StudentGrades(student_id, avg_score, academic_rank)`, giải mã 2 chặng phụ thuộc, bất thường cập nhật khi sửa điểm, và 2 giải pháp (Bảng tra cứu độc lập vs Tính toán động qua `CASE WHEN`).
   - §4.5 Chuẩn 4NF & Phụ thuộc đa trị (MVD): Giải mã hiện tượng bùng nổ tổ hợp tích Descartes ($M \times N$) khi gom 2 nhóm 1-N độc lập (`it_certification` và `spoken_language`).
-- Đã bổ sung chú thích sư phạm bằng tiếng Anh (Picture captions: `*Picture 1*` → `*Picture 12*`) ngay dưới từng sơ đồ, giải nghĩa sâu sắc 4 tiêu chí CSDL tốt, cơ chế phát sinh 3 dạng bất thường dữ liệu, các nguyên tắc chuẩn hóa 1NF-4NF, và giải pháp triệt tiêu chuỗi bắc cầu/bùng nổ tích Descartes.
+- Đã bổ sung chú thích sư phạm bằng tiếng Anh (Figure captions: `*Figure 1*` → `*Figure 12*`) ngay dưới từng sơ đồ, giải nghĩa sâu sắc 4 tiêu chí CSDL tốt, cơ chế phát sinh 3 dạng bất thường dữ liệu, các nguyên tắc chuẩn hóa 1NF-4NF, và giải pháp triệt tiêu chuỗi bắc cầu/bùng nổ tích Descartes.
 - Chuẩn bị tạo các commit phân tách theo từng file/tính năng, pull sync với remote main và push code.
 
 ---
 
 ## 2. Các thay đổi gần đây / Recent Changes
 
+- **Chính tả & Chuẩn hóa (Refactoring)**:
+  - Đã chuẩn hóa toàn bộ thuật ngữ `Picture` thành `Figure` (vd: `*Figure 1*`) trên toàn dự án để tuân thủ Best Practice trong tài liệu kỹ thuật.
 - **Part 1 - Các Khái Niệm Cơ Bản**:
-  - Bổ sung chú thích sư phạm bằng tiếng Anh (Picture captions: `*Figure 1*` → `*Figure 4*`) dưới 4 hình ảnh minh họa trong `Part 1 - Basic Concepts.md`.
+  - Bổ sung chú thích sư phạm bằng tiếng Anh (Figure captions: `*Figure 1*` → `*Figure 4*`) dưới 4 hình ảnh minh họa trong `Part 1 - Basic Concepts.md`.
 - **Part 2 - Chuẩn hóa CSDL (Standardization)**:
   - Khắc phục lỗi render công thức KaTeX tại §3.3 (Transitive Dependency) bằng cách chuyển sang ký hiệu thuộc tính PascalCase `\text{StudentID} \xrightarrow{(1)} \text{AvgScore} \xrightarrow{(2)} \text{AcademicRank}`, loại bỏ hoàn toàn lỗi xung đột ký tự thoát `'_' allowed only in math mode`.
-  - Thêm chú thích sư phạm súc tích, giàu ý nghĩa (`*Picture 1*` đến `*Picture 12*`) dưới tất cả 12 hình ảnh minh họa trong `Part 2 - Standardization.md`.
+  - Thêm chú thích sư phạm súc tích, giàu ý nghĩa (`*Figure 1*` đến `*Figure 12*`) dưới tất cả 12 hình ảnh minh họa trong `Part 2 - Standardization.md`.
   - Bổ sung nội dung diễn giải chi tiết cho `Example 1.png` và `Example 2.png` tại mục §3.3 (Transitive Dependency), kèm `[!NOTE]` trỏ tới §4.3 mà không làm trùng lặp SQL.
   - Điều chuyển `Principle 4.png` về đúng vị trí tại mục §4.5 (4NF), giải thích khái niệm Phụ thuộc đa trị $X \twoheadrightarrow Y$ và hiện tượng dư thừa tổ hợp.
   - Chèn sơ đồ tổng quan `Normalization.png` ngay sau tiêu đề §4.
@@ -45,8 +47,8 @@
    - Phần §3 tập trung thuần túy vào bản chất toán học/logic của Phụ thuộc hàm (FD). Toàn bộ mã nguồn DDL/DQL và script tái cấu trúc được dồn về Phần §4 (Các Dạng Chuẩn Hóa) để giữ cấu trúc sư phạm trong sáng và tránh trùng lặp nội dung.
 3. **Vị trí hình ảnh tương ứng với nội dung khái niệm**:
    - Mọi sơ đồ, hình ảnh minh họa phải đặt chính xác tại section giải thích khái niệm tương ứng (e.g. `Principle 4.png` về MVD phải nằm ở §4.5 4NF, không để ở §3).
-4. **Chú thích sơ đồ sư phạm (Picture Captions)**:
-   - Toàn bộ hình ảnh minh họa trong tài liệu markdown đều có chú thích in nghiêng bằng tiếng Anh ngay bên dưới theo định dạng `*Picture N: Concept — Pedagogical Rationale*`, nhằm hỗ trợ việc ôn tập trực quan và nắm chắc bản chất thiết kế.
+4. **Chú thích sơ đồ sư phạm (Figure Captions)**:
+   - Toàn bộ hình ảnh minh họa trong tài liệu markdown đều có chú thích in nghiêng bằng tiếng Anh ngay bên dưới theo định dạng `*Figure N: Concept — Pedagogical Rationale*`, nhằm hỗ trợ việc ôn tập trực quan và nắm chắc bản chất thiết kế.
 5. **Quy chuẩn đặt tên thuộc tính trong công thức KaTeX**:
    - Sử dụng PascalCase (e.g., `StudentID`, `AvgScore`, `AcademicRank`) trong các khối toán học KaTeX `$$...$$` thay cho snake_case (`student_id`), nhằm loại bỏ triệt để lỗi Markdown parser nuốt ký tự escape `\` gây lỗi `'_' allowed only in math mode`.
 6. **PostgreSQL / SQL Server Compatibility**:
