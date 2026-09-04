@@ -496,7 +496,7 @@ Bảng `Courses` có khóa chính là `course_id`:
 - **Phân tích phụ thuộc hàm**:
   - `course_id -> teacher_id`: Mỗi khóa học do 1 giáo viên phụ trách.
   - `teacher_id -> teacher_name, teacher_phone`: Biết mã giáo viên sẽ biết tên và số điện thoại của giáo viên đó.
-  - Ta có chuỗi bắc cầu: $\text{course\_id} \rightarrow \text{teacher\_id} \rightarrow \{\text{teacher\_name}, \text{teacher\_phone}\}$.
+  - Ta có chuỗi bắc cầu: `course_id` $\rightarrow$ `teacher_id` $\rightarrow$ `{teacher_name, teacher_phone}`.
   - Trong đó `teacher_id` **không phải là khóa chính hay super key** của bảng `Courses`. Dẫn đến tên và số điện thoại của giáo viên `Nguyen Van An` bị lặp lại ở mọi môn do thầy phụ trách.
 
 #### Ví dụ 2 vi phạm 3NF: Thuộc tính suy diễn (Derived Attribute)
@@ -510,7 +510,7 @@ Bảng `StudentExams` có khóa chính là `student_id`:
 | S03 | Tran Van C | 4.0 | Yeu |
 
 - Quy tắc: Điểm từ `8.0 - 10.0` là `Gioi`, `5.0 - 7.9` là `Trung binh`, dưới `5.0` là `Yeu`.
-- Ta có chuỗi: $\text{student\_id} \rightarrow \text{gpa} \rightarrow \text{academic\_rank}$.
+- Ta có chuỗi: `student_id` $\rightarrow$ `gpa` $\rightarrow$ `academic_rank`.
 - Thuộc tính `academic_rank` phụ thuộc trực tiếp vào `gpa`, nhưng `gpa` không phải là khóa chính.
   - Nếu sinh viên `S01` được phúc khảo nâng điểm từ `8.5` lên `9.0`, hệ thống chỉ sửa cột `gpa`. Nếu quên cập nhật cột `academic_rank`, dữ liệu sẽ bất nhất.
   - **Giải pháp**: Xóa bỏ cột `academic_rank` khỏi bảng và tính toán động qua câu truy vấn (`CASE WHEN`) hoặc `COMPUTED COLUMN` trong SQL.
