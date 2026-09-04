@@ -308,6 +308,87 @@ Dữ liệu có cần FK trỏ sang bảng khác?
                             └── KHÔNG → [ BẢNG RIÊNG - chuẩn 1NF ]
 ```
 
+##### Ví dụ thực chiến: Bài toán "Đóng băng lịch sử" (Snapshot)
+
+Trong nghiệp vụ thương mại điện tử và tài chính, bài toán **"Đóng băng lịch sử" (Historical Snapshot)** là minh chứng kinh điển nhất cho việc **sử dụng JSON có chủ đích** thay vì cố ép chuẩn hóa bằng Foreign Key (Khóa ngoại).
+
+**1. Hiểm họa của thiết kế ngây thơ (Naive Foreign Key)**
+
+Nếu thiết kế theo chuẩn hóa thuần túy:
+
+```text
+[Customers] 1 ──< [Customer_Addresses] (address_id, street, city)
+                          │
+                          │ (FK: shipping_address_id)
+                          ▼
+                       [Orders]
+```
+
+- **Tháng 01/2023**: Khách A đặt đơn hàng `#ORD-101` giao về địa chỉ `address_id = 5` ("Hà Nội").
+- **Tháng 06/2024**: Khách A sửa lại `address_id = 5` thành "TP.HCM" trong sổ địa chỉ.
+- **Hậu quả**: Khi kế toán đối soát đơn hàng `#ORD-101` của năm 2023, địa chỉ giao hàng tự động biến thành TP.HCM.
+- **Nguyên tắc**: Đơn hàng & Hóa đơn là **chứng từ pháp lý bất biến**. Toàn bộ bối cảnh (địa chỉ, giá tiền, chiết khấu) phải được đóng băng vĩnh viễn lúc thanh toán.
+
+**2. Thiết kế Table thực tế (SQL Server / PostgreSQL)**
+
+- **Bảng `Customer_Addresses`**: Sổ địa chỉ (Address Book) để khách hàng quản lý và chọn.
+- **Bảng `Orders`**: Lưu một cột `shipping_snapshot` dạng **JSON/JSONB** chứa toàn bộ dữ liệu địa chỉ tại lúc checkout.
+
+```sql
+-- 1. Bảng Đơn hàng (Áp dụng Snapshot JSON để đảm bảo tính bất biến)
+CREATE TABLE dbo.Orders (
+    order_id             BIGINT IDENTITY(1,1) CONSTRAINT PK_Orders PRIMARY KEY,
+    order_code           VARCHAR(32) NOT NULL CONSTRAINT UQ_Orders_code UNIQUE,
+    customer_id          INT NOT NULL,
+    total_amount         DECIMAL(18, 2) NOT NULL,
+    
+    -- [CRITICAL]: Cột Snapshot đóng băng toàn bộ thông tin nhận hàng lúc bấm mua
+    shipping_snapshot    NVARCHAR(MAX) NOT NULL,
+    
+    -- Ràng buộc kiểm tra tính hợp lệ của định dạng JSON trong SQL Server
+    CONSTRAINT CK_Orders_shipping_snapshot_isjson CHECK (ISJSON(shipping_snapshot) = 1),
+    
+    created_at           DATETIME2(7) NOT NULL CONSTRAINT DF_Orders_created_at DEFAULT SYSDATETIME()
+);
+```
+
+> **Ghi chú**: Trên PostgreSQL, ta sẽ dùng kiểu `shipping_snapshot JSONB NOT NULL` (không cần check `ISJSON` vì kiểu bản địa tự động kiểm tra).
+
+**3. Cấu trúc dữ liệu bên trong `shipping_snapshot`**
+
+Khi Backend xử lý request đặt hàng, nó lấy thông tin địa chỉ từ sổ địa chỉ, đóng gói thành JSON và insert nguyên khối:
+
+```json
+{
+  "address_book_id": 5,
+  "recipient_name": "Nguyễn Văn A",
+  "phone_number": "0912345678",
+  "street_address": "Số 12 Chùa Bộc",
+  "ward": "Phường Quang Trung",
+  "district": "Quận Đống Đa",
+  "city": "Hà Nội",
+  "snapshotted_at": "2024-03-15T09:30:00Z"
+}
+```
+
+**4. Khai thác dữ liệu**
+
+Khách hàng sau đó có quyền sửa hoặc xóa địa chỉ ở bảng `Customer_Addresses`, nhưng đơn hàng cũ hoàn toàn **miễn nhiễm**. Khi in hóa đơn, ứng dụng chỉ cần lấy khối JSON ra để render. Hoặc trên SQL Server, có thể trích xuất nếu cần:
+
+```sql
+SELECT 
+    order_code,
+    JSON_VALUE(shipping_snapshot, '$.recipient_name') AS recipient_name,
+    JSON_VALUE(shipping_snapshot, '$.city')           AS city
+FROM dbo.Orders
+WHERE order_code = 'ORD-20240315-001';
+```
+
+**Tại sao thiết kế này hợp pháp với tinh thần 1NF?**
+
+1. **Tính nguyên tố**: RDBMS xem cột `shipping_snapshot` là một khối văn bản tĩnh (Immutable Blob). Hệ thống không chạy câu lệnh `JOIN` hay `WHERE shipping_snapshot.city = ...` trong các luồng nghiệp vụ cốt lõi. Khối JSON được trả nguyên vẹn về cho Application xử lý.
+2. **Không Concurrency Lock**: Không cần tạo thêm bảng trung gian `Order_Shipping_Addresses` dài dòng và không bị lock lây lan.
+3. **Mở rộng dễ dàng**: Khi đơn vị vận chuyển đòi thêm trường (như toạ độ `latitude`, `longitude`), bạn không cần `ALTER TABLE` bảng `Orders` (vốn có thể chứa hàng chục triệu dòng).
 
 
 #### Tái cấu trúc chuẩn 1NF:
