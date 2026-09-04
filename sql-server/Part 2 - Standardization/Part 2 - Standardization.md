@@ -499,31 +499,9 @@ Bảng `Courses` có khóa chính là `course_id`:
   - Ta có chuỗi bắc cầu: `course_id` $\rightarrow$ `teacher_id` $\rightarrow$ `{teacher_name, teacher_phone}`.
   - Trong đó `teacher_id` **không phải là khóa chính hay super key** của bảng `Courses`. Dẫn đến tên và số điện thoại của giáo viên `Nguyen Van An` bị lặp lại ở mọi môn do thầy phụ trách.
 
-#### Ví dụ 2 vi phạm 3NF: Thuộc tính suy diễn (Derived Attribute)
-
-Bảng `StudentExams` có khóa chính là `student_id`:
-
-| student_id (PK) | full_name | gpa | academic_rank |
-| :--- | :--- | :--- | :--- |
-| S01 | Nguyen Van A | 8.5 | Gioi |
-| S02 | Le Thi B | 6.2 | Trung binh |
-| S03 | Tran Van C | 4.0 | Yeu |
-
-- Quy tắc: Điểm từ `8.0 - 10.0` là `Gioi`, `5.0 - 7.9` là `Trung binh`, dưới `5.0` là `Yeu`.
-- Ta có chuỗi: `student_id` $\rightarrow$ `gpa` $\rightarrow$ `academic_rank`.
-- Thuộc tính `academic_rank` phụ thuộc trực tiếp vào `gpa`, nhưng `gpa` không phải là khóa chính.
-  - Nếu sinh viên `S01` được phúc khảo nâng điểm từ `8.5` lên `9.0`, hệ thống chỉ sửa cột `gpa`. Nếu quên cập nhật cột `academic_rank`, dữ liệu sẽ bất nhất.
-  - **Giải pháp**: Xóa bỏ cột `academic_rank` khỏi bảng và tính toán động qua câu truy vấn (`CASE WHEN`) hoặc `COMPUTED COLUMN` trong SQL.
-
-#### Tái cấu trúc chuẩn 3NF:
+**Giải pháp tái cấu trúc 3NF cho Ví dụ 1:**
 
 ```sql
--- ============================================================
--- VÍ DỤ ĐỘC LẬP §4.3: Hệ thống khóa học - 1 giáo viên phụ trách (N:1)
--- Business rule: 1 khóa học chỉ do 1 giáo viên phụ trách
--- (Khác hoàn toàn với ví dụ N:N ở §4.1)
--- ============================================================
-
 -- 1. Bảng Teachers: Lưu danh mục giáo viên
 CREATE TABLE dbo.Teachers (
     teacher_id    INT           IDENTITY(1,1) NOT NULL,
@@ -541,6 +519,45 @@ CREATE TABLE dbo.Courses (
     CONSTRAINT PK_Courses PRIMARY KEY (course_id),
     CONSTRAINT FK_Courses_Teachers FOREIGN KEY (teacher_id) 
         REFERENCES dbo.Teachers (teacher_id)
+);
+```
+
+#### Ví dụ 2 vi phạm 3NF: Thuộc tính suy diễn (Derived Attribute)
+
+Bảng `StudentExams` có khóa chính là `student_id`:
+
+| student_id (PK) | full_name | gpa | academic_rank |
+| :--- | :--- | :--- | :--- |
+| S01 | Nguyen Van A | 8.5 | Gioi |
+| S02 | Le Thi B | 6.2 | Trung binh |
+| S03 | Tran Van C | 4.0 | Yeu |
+
+- Quy tắc: Điểm từ `8.0 - 10.0` là `Gioi`, `5.0 - 7.9` là `Trung binh`, dưới `5.0` là `Yeu`.
+- Ta có chuỗi: `student_id` $\rightarrow$ `gpa` $\rightarrow$ `academic_rank`.
+- Thuộc tính `academic_rank` phụ thuộc trực tiếp vào `gpa`, nhưng `gpa` không phải là khóa chính.
+  - Nếu sinh viên `S01` được phúc khảo nâng điểm từ `8.5` lên `9.0`, hệ thống chỉ sửa cột `gpa`. Nếu quên cập nhật cột `academic_rank`, dữ liệu sẽ bất nhất.
+  - **Giải pháp**: Xóa bỏ cột `academic_rank` khỏi bảng.
+
+**Giải pháp tái cấu trúc 3NF cho Ví dụ 2:**
+
+Sử dụng Cột tính toán ảo (`COMPUTED COLUMN`) trong SQL Server. Dữ liệu sẽ được tính toán động mỗi khi `SELECT` dựa trên `gpa`, không lưu trữ vật lý nên không bao giờ xảy ra bất nhất dữ liệu:
+
+```sql
+CREATE TABLE dbo.StudentExams (
+    student_id    VARCHAR(10)   NOT NULL,
+    full_name     NVARCHAR(100) NOT NULL,
+    gpa           DECIMAL(3,1)  NOT NULL,
+    
+    -- Thuộc tính suy diễn được tính toán tự động
+    academic_rank AS (
+        CASE 
+            WHEN gpa >= 8.0 THEN 'Gioi'
+            WHEN gpa >= 5.0 AND gpa < 8.0 THEN 'Trung binh'
+            ELSE 'Yeu'
+        END
+    ),
+    
+    CONSTRAINT PK_StudentExams PRIMARY KEY (student_id)
 );
 ```
 
