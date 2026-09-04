@@ -3,6 +3,7 @@
 ## 1. Giới thiệu về Cơ sở dữ liệu quan hệ (RDBMS)
 
 ![Mô hình CSDL quan hệ - RDBMS](./RDBMS.png)
+*Figure 1: Relational Database Model - RDBMS*
 
 ### 1.1 Khái niệm CSDL quan hệ
 
@@ -238,6 +239,7 @@ Mối quan hệ giữa hai bảng được xác định dựa trên số lượn
 ### 6.1 Quan hệ 1 - 1 (One-to-One / 1:1)
 
 ![Mô hình Quan hệ 1 - 1](./1-1.png)
+*Figure 2: One-to-One Relationship Model*
 
 - **Định nghĩa**: Một dòng trong bảng A chỉ liên kết với tối đa **một dòng duy nhất** trong bảng B, và ngược lại một dòng trong bảng B chỉ liên kết với tối đa **một dòng duy nhất** trong bảng A.
 - **Ứng dụng thực tế**:
@@ -260,6 +262,7 @@ CREATE TABLE dbo.UserProfiles (
 ### 6.2 Quan hệ 1 - Nhiều (One-to-Many / 1:N)
 
 ![Mô hình Quan hệ 1 - Nhiều](./1-n.png)
+*Figure 3: One-to-Many Relationship Model*
 
 - **Định nghĩa**: Một dòng trong bảng A có thể liên kết với **nhiều dòng** trong bảng B, nhưng mỗi dòng trong bảng B chỉ liên kết với **duy nhất một dòng** trong bảng A.
 - **Ứng dụng thực tế**: Đây là loại quan hệ phổ biến nhất trong các hệ thống RDBMS:
@@ -271,6 +274,7 @@ CREATE TABLE dbo.UserProfiles (
 ### 6.3 Quan hệ Nhiều - Nhiều (Many-to-Many / N:M) & Bảng trung gian (Junction Table)
 
 ![Mô hình Quan hệ Nhiều - Nhiều](./n-n.png)
+*Figure 4: Many-to-Many Relationship Model*
 
 - **Định nghĩa**: Một dòng trong bảng A có thể liên kết với **nhiều dòng** trong bảng B, và ngược lại một dòng trong bảng B cũng có thể liên kết với **nhiều dòng** trong bảng A.
 - _Ví dụ:_
