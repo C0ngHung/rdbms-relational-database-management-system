@@ -1011,11 +1011,111 @@ CREATE TABLE dbo.LibraryRaw (
 > - `book_authors` — vi phạm gì? Giải pháp tách bảng thế nào (N:N hay N:1)?
 > - `city` và `country` — có phụ thuộc bắc cầu không? Khi nào thì nên tách, khi nào không cần?
 
+#### Lời giải Bước 1: Phân tích vi phạm
+
+1. **Vi phạm 1NF (Dữ liệu không nguyên tố):**
+   - Cột `book_authors` chứa danh sách tác giả dạng chuỗi phân tách (Ví dụ: `Tac gia A, Tac gia B`).
+   - **Giải quyết:** Thiết lập quan hệ Nhiều - Nhiều (N:N) thông qua 3 bảng: `Books`, `Authors`, và bảng trung gian `Book_Authors`.
+
+2. **Vi phạm 2NF (Phụ thuộc một phần khóa):**
+   - Khóa tự nhiên (Natural Key) của một giao dịch mượn sách là tập hợp `(member_phone, book_isbn, borrow_date)`. Khi đó:
+     - `member_name`, `city`, `country` chỉ phụ thuộc vào `member_phone`.
+     - `book_title`, `genre_name`, `genre_desc` chỉ phụ thuộc vào `book_isbn`.
+   - **Giải quyết:** Tách dữ liệu thực thể tĩnh ra khỏi dữ liệu giao dịch. Tạo bảng `Members` và bảng `Books`. Bảng giao dịch `Borrows` chỉ giữ lại Khóa ngoại (FK).
+
+3. **Vi phạm 3NF (Phụ thuộc bắc cầu):**
+   - **Cặp `genre_name` $\rightarrow$ `genre_desc`**: Mô tả thể loại phụ thuộc trực tiếp vào tên thể loại, không phụ thuộc vào cuốn sách. 
+     - **Giải quyết:** Tách thành bảng danh mục `Genres(genre_name, genre_desc)`.
+   - **Cặp `city` $\rightarrow$ `country`**: Từ thành phố có thể suy ra quốc gia (VD: HCM $\rightarrow$ Viet Nam).
+     - **Đánh đổi thực tiễn (Pragmatic Trade-off):** Theo lý thuyết thuần túy thì phải tách thành bảng `Countries` và `Cities`. Tuy nhiên, với hệ thống thư viện nhỏ, việc này là Over-engineering (thiết kế quá mức). Ta chủ đích chấp nhận vi phạm 3NF (Phi chuẩn hóa - Denormalization) và giữ `city`, `country` trong bảng `Members` để tránh các câu lệnh `JOIN` dư thừa.
+
+#### Lời giải Bước 2: Thiết kế Sơ đồ Cơ sở dữ liệu (Database Schema)
+
+Dựa trên phân tích, ta có thiết kế 6 bảng như sau:
+
+1. **`Genres`**: `genre_name` (PK), `genre_desc`
+2. **`Authors`**: `author_id` (PK), `author_name`
+3. **`Members`**: `member_phone` (PK), `member_name`, `city`, `country`
+4. **`Books`**: `book_isbn` (PK), `book_title`, `genre_name` (FK)
+5. **`Book_Authors`**: `book_isbn` (PK/FK), `author_id` (PK/FK) - *Bảng trung gian*
+6. **`Borrows`**: `borrow_id` (PK), `member_phone` (FK), `book_isbn` (FK), `borrow_date`, `return_due`, `is_returned`
+
+#### Lời giải Bước 3: Triển khai DDL (SQL Server)
+
+Dưới đây là mã lệnh DDL hoàn chỉnh, chú ý sử dụng `IDENTITY(1,1)` cho Khóa tự tăng và kiểu `BIT` thay cho `BOOLEAN` trong SQL Server. Thứ tự tạo bảng tuân thủ nguyên tắc: Bảng không chứa Khóa ngoại (FK) được tạo trước.
+
+```sql
+-- 1. Bảng thể loại (Không chứa FK)
+CREATE TABLE dbo.Genres (
+    genre_name NVARCHAR(50) NOT NULL,
+    genre_desc NVARCHAR(500),
+    CONSTRAINT PK_Genres PRIMARY KEY (genre_name)
+);
+
+-- 2. Bảng tác giả (Không chứa FK)
+CREATE TABLE dbo.Authors (
+    author_id INT IDENTITY(1,1) NOT NULL,
+    author_name NVARCHAR(100) NOT NULL,
+    CONSTRAINT PK_Authors PRIMARY KEY (author_id)
+);
+
+-- 3. Bảng độc giả (Không chứa FK)
+CREATE TABLE dbo.Members (
+    member_phone VARCHAR(15) NOT NULL,
+    member_name NVARCHAR(100) NOT NULL,
+    city NVARCHAR(50),
+    country NVARCHAR(50) CONSTRAINT DF_Members_country DEFAULT 'Viet Nam',
+    CONSTRAINT PK_Members PRIMARY KEY (member_phone)
+);
+
+-- 4. Bảng sách (Tham chiếu đến Genres)
+CREATE TABLE dbo.Books (
+    book_isbn VARCHAR(20) NOT NULL,
+    book_title NVARCHAR(200) NOT NULL,
+    genre_name NVARCHAR(50),
+    CONSTRAINT PK_Books PRIMARY KEY (book_isbn),
+    CONSTRAINT FK_Books_Genres FOREIGN KEY (genre_name) 
+        REFERENCES dbo.Genres(genre_name)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL
+);
+
+-- 5. Bảng trung gian Sách - Tác giả (Quan hệ N:N, Composite PK)
+CREATE TABLE dbo.Book_Authors (
+    book_isbn VARCHAR(20) NOT NULL,
+    author_id INT NOT NULL,
+    CONSTRAINT PK_BookAuthors PRIMARY KEY (book_isbn, author_id),
+    CONSTRAINT FK_BookAuthors_Books FOREIGN KEY (book_isbn) 
+        REFERENCES dbo.Books(book_isbn)
+        ON DELETE CASCADE,
+    CONSTRAINT FK_BookAuthors_Authors FOREIGN KEY (author_id) 
+        REFERENCES dbo.Authors(author_id)
+        ON DELETE CASCADE
+);
+
+-- 6. Bảng giao dịch mượn sách (Tham chiếu Members và Books)
+CREATE TABLE dbo.Borrows (
+    borrow_id INT IDENTITY(1,1) NOT NULL,
+    member_phone VARCHAR(15) NOT NULL,
+    book_isbn VARCHAR(20) NOT NULL,
+    borrow_date DATE NOT NULL,
+    return_due DATE NOT NULL,
+    is_returned BIT NOT NULL CONSTRAINT DF_Borrows_is_returned DEFAULT 0,
+    CONSTRAINT PK_Borrows PRIMARY KEY (borrow_id),
+    CONSTRAINT FK_Borrows_Members FOREIGN KEY (member_phone) 
+        REFERENCES dbo.Members(member_phone)
+        ON UPDATE CASCADE,
+    CONSTRAINT FK_Borrows_Books FOREIGN KEY (book_isbn) 
+        REFERENCES dbo.Books(book_isbn)
+        ON UPDATE CASCADE
+);
+```
+
 #### Checklist tự review trước khi nộp
 
-- [ ] **Bước 1**: Liệt kê rõ từng cột vi phạm và loại vi phạm (1NF / 2NF / 3NF)
-- [ ] **Bước 2**: Mỗi bảng trong sơ đồ ghi rõ PK và các FD chính
-- [ ] **Bước 3**: Thứ tự `CREATE TABLE` tuân theo dependency (cha trước, con sau)
-- [ ] **Bước 3**: Mọi bảng con có FK đầy đủ trỏ về bảng cha
-- [ ] **Bước 3**: Có `UNIQUE` constraint cho các business key (ISBN, member_phone...)
+- [x] **Bước 1**: Liệt kê rõ từng cột vi phạm và loại vi phạm (1NF / 2NF / 3NF)
+- [x] **Bước 2**: Mỗi bảng trong sơ đồ ghi rõ PK và các FD chính
+- [x] **Bước 3**: Thứ tự `CREATE TABLE` tuân theo dependency (cha trước, con sau)
+- [x] **Bước 3**: Mọi bảng con có FK đầy đủ trỏ về bảng cha
+- [x] **Bước 3**: Có `UNIQUE` constraint cho các business key (Đã sử dụng làm PK)
 
