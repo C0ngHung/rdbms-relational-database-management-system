@@ -536,19 +536,40 @@ Bảng `StudentExams` có khóa chính là `student_id`:
 - Ta có chuỗi: `student_id` $\rightarrow$ `gpa` $\rightarrow$ `academic_rank`.
 - Thuộc tính `academic_rank` phụ thuộc trực tiếp vào `gpa`, nhưng `gpa` không phải là khóa chính.
   - Nếu sinh viên `S01` được phúc khảo nâng điểm từ `8.5` lên `9.0`, hệ thống chỉ sửa cột `gpa`. Nếu quên cập nhật cột `academic_rank`, dữ liệu sẽ bất nhất.
-  - **Giải pháp**: Xóa bỏ cột `academic_rank` khỏi bảng.
 
 **Giải pháp tái cấu trúc 3NF cho Ví dụ 2:**
 
-Sử dụng Cột tính toán ảo (`COMPUTED COLUMN`) trong SQL Server. Dữ liệu sẽ được tính toán động mỗi khi `SELECT` dựa trên `gpa`, không lưu trữ vật lý nên không bao giờ xảy ra bất nhất dữ liệu:
+Tách `academic_rank` ra khỏi bảng `StudentExams`. Có 2 hướng xử lý tùy theo yêu cầu nghiệp vụ:
 
+**Hướng 1 — Bảng tra cứu (Lookup Table):** Tạo bảng `GradeRanks(min_score, max_score, rank_name)` lưu quy tắc xếp loại độc lập; `StudentExams` chỉ giữ `student_id` và `gpa`, khi cần sẽ tra cứu xếp loại qua `JOIN`.
+```sql
+-- Bảng quy tắc xếp loại độc lập
+CREATE TABLE dbo.GradeRanks (
+    rank_id    INT          IDENTITY(1,1) PRIMARY KEY,
+    min_score  DECIMAL(3,1) NOT NULL,
+    max_score  DECIMAL(3,1) NOT NULL,
+    rank_name  NVARCHAR(50) NOT NULL
+);
+-- INSERT INTO GradeRanks VALUES (8.0, 10.0, 'Gioi'), (5.0, 7.9, 'Trung binh'), (0.0, 4.9, 'Yeu');
+
+-- Lấy dữ liệu qua JOIN
+SELECT 
+    s.student_id, 
+    s.full_name, 
+    s.gpa, 
+    r.rank_name AS academic_rank
+FROM dbo.StudentExams s
+LEFT JOIN dbo.GradeRanks r ON s.gpa >= r.min_score AND s.gpa <= r.max_score;
+```
+
+**Hướng 2 — Tính toán động (Computed Column / CASE WHEN):** Xóa hoàn toàn cột `academic_rank`, tính trực tiếp bằng `CASE WHEN` trong câu truy vấn `SELECT` (hoặc cấu hình thành cột tính toán ảo `COMPUTED COLUMN` trong CSDL để tiện tái sử dụng).
 ```sql
 CREATE TABLE dbo.StudentExams (
     student_id    VARCHAR(10)   NOT NULL,
     full_name     NVARCHAR(100) NOT NULL,
     gpa           DECIMAL(3,1)  NOT NULL,
     
-    -- Thuộc tính suy diễn được tính toán tự động
+    -- Tính toán tự động, không lưu trữ vật lý, không lo bất nhất
     academic_rank AS (
         CASE 
             WHEN gpa >= 8.0 THEN 'Gioi'
@@ -560,6 +581,8 @@ CREATE TABLE dbo.StudentExams (
     CONSTRAINT PK_StudentExams PRIMARY KEY (student_id)
 );
 ```
+
+Cả 2 hướng đều loại bỏ hoàn toàn chuỗi phụ thuộc bắc cầu, đảm bảo thỏa mãn 3NF.
 
 ---
 
