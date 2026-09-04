@@ -159,7 +159,7 @@ Quy tắc xếp loại: `1–4: Yếu` · `5–7: Trung bình` · `8–10: Giỏ
 
 **Phân tích chuỗi phụ thuộc hàm:**
 
-$$\text{student\_id} \xrightarrow{(1)} \text{avg\_score} \xrightarrow{(2)} \text{academic\_rank}$$
+$$\text{StudentID} \xrightarrow{(1)} \text{AvgScore} \xrightarrow{(2)} \text{AcademicRank}$$
 
 - **(1)** `student_id → avg_score`: Mỗi học sinh có đúng 1 điểm trung bình — phụ thuộc **trực tiếp** vào PK. ✅
 - **(2)** `avg_score → academic_rank`: Xếp loại được suy ra hoàn toàn từ điểm số theo quy tắc range — phụ thuộc **vào `avg_score`**, không phụ thuộc trực tiếp vào `student_id`. ❌
