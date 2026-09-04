@@ -20,6 +20,7 @@
 ## 2. Các thay đổi gần đây / Recent Changes
 
 - **Part 2 - Chuẩn hóa CSDL (Standardization)**:
+  - Khắc phục lỗi render công thức KaTeX tại §3.3 (Transitive Dependency) bằng cách chuyển sang ký hiệu thuộc tính PascalCase `\text{StudentID} \xrightarrow{(1)} \text{AvgScore} \xrightarrow{(2)} \text{AcademicRank}`, loại bỏ hoàn toàn lỗi xung đột ký tự thoát `'_' allowed only in math mode`.
   - Thêm chú thích sư phạm súc tích, giàu ý nghĩa (`*Picture 1*` đến `*Picture 12*`) dưới tất cả 12 hình ảnh minh họa trong `Part 2 - Standardization.md`.
   - Bổ sung nội dung diễn giải chi tiết cho `Example 1.png` và `Example 2.png` tại mục §3.3 (Transitive Dependency), kèm `[!NOTE]` trỏ tới §4.3 mà không làm trùng lặp SQL.
   - Điều chuyển `Principle 4.png` về đúng vị trí tại mục §4.5 (4NF), giải thích khái niệm Phụ thuộc đa trị $X \twoheadrightarrow Y$ và hiện tượng dư thừa tổ hợp.
@@ -44,7 +45,9 @@
    - Mọi sơ đồ, hình ảnh minh họa phải đặt chính xác tại section giải thích khái niệm tương ứng (e.g. `Principle 4.png` về MVD phải nằm ở §4.5 4NF, không để ở §3).
 4. **Chú thích sơ đồ sư phạm (Picture Captions)**:
    - Toàn bộ hình ảnh minh họa trong tài liệu markdown đều có chú thích in nghiêng bằng tiếng Anh ngay bên dưới theo định dạng `*Picture N: Concept — Pedagogical Rationale*`, nhằm hỗ trợ việc ôn tập trực quan và nắm chắc bản chất thiết kế.
-5. **PostgreSQL / SQL Server Compatibility**:
+5. **Quy chuẩn đặt tên thuộc tính trong công thức KaTeX**:
+   - Sử dụng PascalCase (e.g., `StudentID`, `AvgScore`, `AcademicRank`) trong các khối toán học KaTeX `$$...$$` thay cho snake_case (`student_id`), nhằm loại bỏ triệt để lỗi Markdown parser nuốt ký tự escape `\` gây lỗi `'_' allowed only in math mode`.
+6. **PostgreSQL / SQL Server Compatibility**:
    - Sử dụng cú pháp T-SQL/SQL Server chuẩn, đồng thời bảo đảm các nguyên lý quan hệ tương thích hoàn toàn với PostgreSQL 16.
 
 ---
