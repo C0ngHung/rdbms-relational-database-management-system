@@ -12,6 +12,7 @@
 - Đã bổ sung lý giải trực giác sâu sắc:
   - §3.3 Phụ thuộc bắc cầu: Bảng `StudentGrades(student_id, avg_score, academic_rank)`, giải mã 2 chặng phụ thuộc, bất thường cập nhật khi sửa điểm, và 2 giải pháp (Bảng tra cứu độc lập vs Tính toán động qua `CASE WHEN`).
   - §4.5 Chuẩn 4NF & Phụ thuộc đa trị (MVD): Giải mã hiện tượng bùng nổ tổ hợp tích Descartes ($M \times N$) khi gom 2 nhóm 1-N độc lập (`it_certification` và `spoken_language`).
+- Đã bổ sung chú thích sư phạm bằng tiếng Anh (Picture captions: `*Picture 1*` → `*Picture 12*`) ngay dưới từng sơ đồ, giải nghĩa sâu sắc 4 tiêu chí CSDL tốt, cơ chế phát sinh 3 dạng bất thường dữ liệu, các nguyên tắc chuẩn hóa 1NF-4NF, và giải pháp triệt tiêu chuỗi bắc cầu/bùng nổ tích Descartes.
 - Chuẩn bị tạo các commit phân tách theo từng file/tính năng, pull sync với remote main và push code.
 
 ---
@@ -19,6 +20,7 @@
 ## 2. Các thay đổi gần đây / Recent Changes
 
 - **Part 2 - Chuẩn hóa CSDL (Standardization)**:
+  - Thêm chú thích sư phạm súc tích, giàu ý nghĩa (`*Picture 1*` đến `*Picture 12*`) dưới tất cả 12 hình ảnh minh họa trong `Part 2 - Standardization.md`.
   - Bổ sung nội dung diễn giải chi tiết cho `Example 1.png` và `Example 2.png` tại mục §3.3 (Transitive Dependency), kèm `[!NOTE]` trỏ tới §4.3 mà không làm trùng lặp SQL.
   - Điều chuyển `Principle 4.png` về đúng vị trí tại mục §4.5 (4NF), giải thích khái niệm Phụ thuộc đa trị $X \twoheadrightarrow Y$ và hiện tượng dư thừa tổ hợp.
   - Chèn sơ đồ tổng quan `Normalization.png` ngay sau tiêu đề §4.
@@ -40,7 +42,9 @@
    - Phần §3 tập trung thuần túy vào bản chất toán học/logic của Phụ thuộc hàm (FD). Toàn bộ mã nguồn DDL/DQL và script tái cấu trúc được dồn về Phần §4 (Các Dạng Chuẩn Hóa) để giữ cấu trúc sư phạm trong sáng và tránh trùng lặp nội dung.
 3. **Vị trí hình ảnh tương ứng với nội dung khái niệm**:
    - Mọi sơ đồ, hình ảnh minh họa phải đặt chính xác tại section giải thích khái niệm tương ứng (e.g. `Principle 4.png` về MVD phải nằm ở §4.5 4NF, không để ở §3).
-4. **PostgreSQL / SQL Server Compatibility**:
+4. **Chú thích sơ đồ sư phạm (Picture Captions)**:
+   - Toàn bộ hình ảnh minh họa trong tài liệu markdown đều có chú thích in nghiêng bằng tiếng Anh ngay bên dưới theo định dạng `*Picture N: Concept — Pedagogical Rationale*`, nhằm hỗ trợ việc ôn tập trực quan và nắm chắc bản chất thiết kế.
+5. **PostgreSQL / SQL Server Compatibility**:
    - Sử dụng cú pháp T-SQL/SQL Server chuẩn, đồng thời bảo đảm các nguyên lý quan hệ tương thích hoàn toàn với PostgreSQL 16.
 
 ---
@@ -59,5 +63,5 @@
 
 ## 5. Vấn đề tồn đọng / Known Issues
 
-- Không có lỗi kỹ thuật tồn đọng. Toàn bộ tài liệu, liên kết hình ảnh và Memory Bank đều nhất quán, chuẩn xác.
+- Không có lỗi kỹ thuật tồn đọng. Toàn bộ tài liệu, liên kết hình ảnh, chú thích và Memory Bank đều nhất quán, chuẩn xác.
 
