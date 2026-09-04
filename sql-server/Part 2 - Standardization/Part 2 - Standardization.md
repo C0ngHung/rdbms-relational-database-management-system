@@ -244,6 +244,72 @@ Bảng `Courses` có một cột chứa danh sách nhiều giáo viên:
 > - Các RDBMS hiện đại (SQL Server hỗ trợ `ISJSON`, `JSON_VALUE`, PostgreSQL hỗ trợ kiểu bản địa `JSONB`) cho phép lưu trữ cấu trúc JSON.
 > - **Nguyên tắc vàng**: Chỉ lưu JSON khi dữ liệu đó là cấu trúc động không cố định (Dynamic Schema, User Configs, Audit Payload) và ứng dụng chỉ đọc/ghi cả khối như một giá trị nguyên bản, **không** dùng các trường con trong JSON làm khóa chính, khóa ngoại hoặc điều kiện `JOIN` thường xuyên.
 
+#### 🔬 Góc nhìn Thực chiến: 1NF và ngoại lệ trong hệ thống sản xuất
+
+Sách giáo khoa nói **1NF cấm lưu mảng, cấm lưu JSON, cấm lưu CSV** — nhưng tại sao các dự án lớn vẫn dùng `JSONB`, `text[]`, hoặc cột `settings VARCHAR`? Câu trả lời nằm ở sự phân biệt giữa **lỗi thiết kế** và **đánh đổi kiến trúc có chủ đích**.
+
+##### Phân loại 3 dạng "lưu danh sách" trong thực tế
+
+**Dạng 1 — Chuỗi CSV trong cột VARCHAR:** `tags = 'php,java,sql'`
+> ⚠️ Đây là **Anti-Pattern** trong 95% trường hợp.
+- `WHERE tags LIKE '%sql%'` → **Full Table Scan** toàn bộ bảng, vô hiệu hóa B-tree Index.
+- Match nhầm: `'%sql%'` sẽ khớp cả `nosql`, `mysql`.
+- Không có Foreign Key để kiểm soát giá trị hợp lệ.
+
+**Dạng 2 — Cột mảng gốc của RDBMS:** `tags text[]`, `phone_numbers varchar(15)[]`
+> ⚠️ **Dùng được có điều kiện** — PostgreSQL có toán tử `ANY`, `@>` và GIN Index hỗ trợ tìm kiếm nhanh, nhưng **không hỗ trợ Foreign Key trên từng phần tử**. Nếu phần tử cần tham chiếu sang bảng khác → dùng bảng junction thay thế.
+
+**Dạng 3 — Cột `JSON` / `JSONB`**
+> ✅ **Hợp lệ khi đáp ứng điều kiện** (xem bên dưới).
+
+Theo định nghĩa gốc của E.F. Codd, 1NF yêu cầu giá trị phải "nguyên tố đối với RDBMS" (Atomic to the DBMS):
+- Nếu ứng dụng chỉ xem khối JSON là một **"Hộp đen"** — RDBMS lưu và trả nguyên cục, không `JOIN`, không `WHERE` vào thuộc tính con → khối JSON là một **giá trị nguyên tố**. **Không vi phạm tinh thần 1NF.**
+- Nếu bạn viết `WHERE JSON_EXTRACT(data, '$.user_id') = ...` hoặc JOIN qua JSON → đang phá vỡ 1NF và biến RDBMS thành Document Database nửa vời.
+
+##### Khi nào ĐƯỢC PHÉP dùng JSON / Mảng?
+
+| Case | Ví dụ thực tế | Lý do hợp lệ |
+| :--- | :--- | :--- |
+| **Thuộc tính động (Polymorphic)** | E-commerce: Áo thun có `size/color`, Laptop có `cpu/ram/battery` | Schema thay đổi theo từng loại sản phẩm, chuẩn hóa EAV 4 bảng làm tê liệt Query Optimizer |
+| **Đóng băng lịch sử (Snapshot)** | Hóa đơn: địa chỉ giao hàng tại thời điểm thanh toán | Khách đổi địa chỉ sau này không được làm thay đổi hóa đơn cũ |
+| **Cấu hình / Metadata người dùng** | `{"theme": "dark", "language": "vi", "sidebar": true}` | Client đọc/ghi nguyên khối, RDBMS không bao giờ `GROUP BY` thuộc tính con |
+
+> **Trường hợp Snapshot:** Nếu chỉ lưu `address_id FK → Addresses`, khi khách dọn nhà và sửa địa chỉ, toàn bộ hóa đơn 3 năm trước bị **sai lệch địa chỉ**. Lưu `checkout_snapshot JSONB` đảm bảo **Immutability** (tính bất biến) của hồ sơ lịch sử.
+
+##### Bảng đánh đổi (Trade-off Matrix)
+
+| Tiêu chí | Chuẩn hóa 1NF (Tách bảng) | Phi chuẩn (JSON / Array) |
+| :--- | :--- | :--- |
+| **Toàn vẹn tham chiếu (FK)** | ✅ Tuyệt đối | ❌ Không có FK |
+| **Cập nhật đồng thời (Concurrency)** | ✅ Chỉ lock dòng con | ❌ Ghi đè toàn cột JSON |
+| **Tìm kiếm (Search)** | ✅ B-tree Index, cực nhẹ | ⚠️ Cần GIN Index nặng hơn nhiều lần |
+| **Phân tích / Thống kê** | ✅ `COUNT()`, `GROUP BY` tự nhiên | ❌ Phải bung mảng (`jsonb_array_elements`, `UNNEST`) |
+| **Linh hoạt schema** | ❌ Cần `ALTER TABLE` | ✅ Thêm field mà không migrate |
+
+##### Khung quyết định khi thiết kế
+
+```
+Dữ liệu có cần FK trỏ sang bảng khác?
+     │
+     ├── CÓ  → [ BẢNG RIÊNG - chuẩn 1NF ]
+     │
+     └── KHÔNG
+           │
+           Phần tử có tham gia WHERE / JOIN / GROUP BY?
+                │
+                ├── CÓ  → [ BẢNG RIÊNG - chuẩn 1NF ]
+                │
+                └── KHÔNG
+                      │
+                      Schema có thay đổi theo từng loại (polymorphic)?
+                            │
+                            ├── CÓ  → [ CỘT JSONB ] (e.g. product attributes)
+                            │
+                            └── KHÔNG → [ BẢNG RIÊNG - chuẩn 1NF ]
+```
+
+
+
 #### Tái cấu trúc chuẩn 1NF:
 
 Tách mối quan hệ giữa Khóa học và Giáo viên thành một bảng liên kết độc lập:
