@@ -13,6 +13,8 @@ Mục đích cốt lõi của chuẩn hóa:
 
 ### 1.2 Thế nào là một Cơ sở dữ liệu được thiết kế tốt?
 
+![Thế nào là một Cơ sở dữ liệu được thiết kế tốt](./CSDL%20Good.png)
+
 Một hệ thống cơ sở dữ liệu được coi là có thiết kế chất lượng cao khi thỏa mãn đồng thời các tiêu chí sau:
 
 - **Chứa đầy đủ thông tin** (**Completeness**): Đây là điều kiện tiên quyết. Lược đồ phải lưu trữ trọn vẹn mọi dữ kiện nghiệp vụ mà người dùng và ứng dụng yêu cầu.
@@ -52,6 +54,8 @@ Khi một bảng cơ sở dữ liệu chưa được chuẩn hóa (thường g�
 
 ### 2.1 Bất thường Cập nhật (Update Anomaly)
 
+![Bất thường Cập nhật - Update Anomaly](./Update%20Anomaly.png)
+
 - **Nguyên nhân**: Cùng một thông tin thực tế khách quan (ví dụ: ngày khai giảng của khóa học, số điện thoại của giáo viên) bị lưu lặp đi lặp lại ở nhiều dòng dữ liệu khác nhau.
 - **Hệ quả**: Khi thông tin đó thay đổi (ví dụ: khóa học `Lập trình OOP` đổi lịch khai giảng sang ngày `2026-10-10`), câu lệnh cập nhật bắt buộc phải quét và sửa trên **toàn bộ** các dòng có chứa khóa học đó.
   - Nếu hệ thống gặp sự cố mạng, timeout, hoặc lập trình viên thiếu cẩn trọng khiến chỉ có 1 dòng được cập nhật còn dòng kia giữ nguyên:
@@ -61,12 +65,16 @@ Khi một bảng cơ sở dữ liệu chưa được chuẩn hóa (thường g�
 
 ### 2.2 Bất thường Chèn (Insert Anomaly)
 
+![Bất thường Chèn - Insert Anomaly](./Insert%20Anomaly.png)
+
 - **Nguyên nhân**: Hai thực thể độc lập (`Courses` và `Students`) bị gộp chung vào một bảng, trong đó khóa chính đòi hỏi phải có sự tham gia của sinh viên.
 - **Hệ quả**: Nhà trường muốn mở một khóa học mới mang tên `Lập trình Python Nâng cao` dự kiến mở vào tháng tới, nhưng hiện tại **chưa có sinh viên nào đăng ký**.
   - Nếu cột `student_name` nằm trong Khóa chính hoặc có ràng buộc `NOT NULL`, hệ thống **hoàn toàn không thể chèn bản ghi mới** cho khóa học này.
   - Muốn thêm khóa học, người quản trị buộc phải nhập một sinh viên "giả" (Dummy Student / Sentinel Value) như `student_name = 'N/A'` hoặc chờ đến khi có sinh viên thật đăng ký. Cả hai cách giải quyết đều phá vỡ tính đúng đắn của dữ liệu.
 
 ### 2.3 Bất thường Xóa (Delete Anomaly)
+
+![Bất thường Xóa - Delete Anomaly](./Delete%20Anomaly.png)
 
 - **Nguyên nhân**: Dữ liệu của thực thể yếu và thực thể mạnh bị ràng buộc cứng ngắc trên cùng một dòng vật lý.
 - **Hệ quả**: 
@@ -81,6 +89,8 @@ Khi một bảng cơ sở dữ liệu chưa được chuẩn hóa (thường g�
 Để hiểu chính xác các dạng chuẩn hóa, trước hết ta cần nắm vững công cụ toán học nền tảng: **Phụ thuộc hàm** (**Functional Dependency - FD**).
 
 ### 3.1 Định nghĩa Phụ thuộc hàm
+
+![Nguyên tắc 1 - Mỗi cột chỉ chứa một mục dữ liệu duy nhất](./Principle%201.png)
 
 Cho một lược đồ quan hệ $R$, giả sử $X$ và $Y$ là hai tập con các thuộc tính của $R$.
 
@@ -97,6 +107,8 @@ _Ví dụ:_
 
 ### 3.2 Phụ thuộc hàm đầy đủ vs Phụ thuộc một phần
 
+![Nguyên tắc 2 - Không được chỉ phụ thuộc một phần của khóa](./Principle%202.png)
+
 - **Phụ thuộc hàm đầy đủ** (**Full Functional Dependency**): Thuộc tính $Y$ phụ thuộc hàm vào tập thuộc tính $X$, và **không phụ thuộc vào bất kỳ tập con thực sự nào của $X$**.
   - Ký hiệu: $X \xrightarrow{\text{full}} Y$.
   - Nếu $X = \{A, B\}$, $Y$ phải cần cả $A$ và $B$ mới xác định được; chỉ biết riêng $A$ hoặc riêng $B$ thì không đủ để xác định $Y$.
@@ -106,6 +118,10 @@ _Ví dụ:_
 
 ### 3.3 Phụ thuộc bắc cầu (Transitive Dependency)
 
+![Nguyên tắc 3 - Không có phụ thuộc bắc cầu](./Principle%203.png)
+
+![Nguyên tắc 3.5 - Mọi định thức phải là Super Key](./Principle%203.5.png)
+
 - Cho 3 tập thuộc tính $X, Y, Z$. Nếu tồn tại:
   1. $X \rightarrow Y$
   2. $Y \rightarrow Z$ ($Y$ không suy ngược lại được $X$)
@@ -113,9 +129,46 @@ _Ví dụ:_
 - Khi đó, ta nói **$Z$ phụ thuộc bắc cầu vào $X$ thông qua $Y$** ($X \rightarrow Y \rightarrow Z$).
 - _Ví dụ:_ `student_id -> major_id -> dean_name` (Mã sinh viên xác định mã khoa; mã khoa xác định tên trưởng khoa. Dẫn đến sinh viên gián tiếp xác định tên trưởng khoa).
 
+#### Ví dụ minh họa: Bảng `StudentGrades` (vi phạm — tồn tại phụ thuộc bắc cầu)
+
+Xét bảng điểm học sinh với khóa chính là `student_id`:
+
+| student_id (PK) | avg_score | academic_rank |
+| :--- | :--- | :--- |
+| A | 7 | Trung bình |
+| B | 8 | Giỏi |
+| C | 6 | Trung bình |
+
+Quy tắc xếp loại: `1–4: Yếu` · `5–7: Trung bình` · `8–10: Giỏi`
+
+**Phân tích chuỗi phụ thuộc hàm:**
+
+$$\text{student\_id} \xrightarrow{(1)} \text{avg\_score} \xrightarrow{(2)} \text{academic\_rank}$$
+
+- **(1)** `student_id → avg_score`: Mỗi học sinh có đúng 1 điểm trung bình — phụ thuộc **trực tiếp** vào PK. ✅
+- **(2)** `avg_score → academic_rank`: Xếp loại được suy ra hoàn toàn từ điểm số theo quy tắc range — phụ thuộc **vào `avg_score`**, không phụ thuộc trực tiếp vào `student_id`. ❌
+- `avg_score` **không phải là Khóa chính**, nhưng lại "làm trung gian" xác định `academic_rank` → đây chính là **phụ thuộc bắc cầu**.
+
+**Hệ quả (Update Anomaly):** Nếu học sinh A được phúc khảo nâng điểm từ `7` lên `8`, cột `avg_score` được sửa nhưng cột `academic_rank` vẫn còn giá trị `Trung bình` cũ — dữ liệu mâu thuẫn ngay trong cùng 1 dòng.
+
+![Ví dụ Phụ thuộc bắc cầu - Điểm trung bình và Xếp loại](./Example%201.png)
+
+**Giải pháp:** Tách `academic_rank` ra khỏi bảng `StudentGrades`. Có 2 hướng tùy theo nghiệp vụ:
+- **Hướng 1 — Bảng tra cứu (Lookup Table):** Tạo bảng `GradeRanks(min_score, max_score, rank)` lưu quy tắc xếp loại độc lập; `StudentGrades` chỉ giữ `student_id` và `avg_score`, tra cứu xếp loại qua `JOIN`.
+- **Hướng 2 — Tính toán động:** Xóa hoàn toàn cột `academic_rank`, tính trực tiếp bằng `CASE WHEN avg_score >= 8 THEN 'Giỏi' ...` trong câu truy vấn.
+
+Cả 2 hướng đều loại bỏ hoàn toàn chuỗi bắc cầu.
+
+![Tách bảng loại bỏ phụ thuộc bắc cầu](./Example%202.png)
+
+> [!NOTE]
+> Ví dụ về SQL tái cấu trúc cụ thể cho trường hợp phụ thuộc bắc cầu được trình bày chi tiết tại **§4.3 Dạng chuẩn 3 (3NF)** — bao gồm cả trường hợp giáo viên phụ trách và thuộc tính suy diễn (`academic_rank`).
+
 ---
 
 ## 4. Các Dạng Chuẩn Hóa (Normal Forms Progression)
+
+![Tiến trình chuẩn hóa dữ liệu lũy tiến: 1NF → 2NF → 3NF → 3.5NF (BCNF) → 4NF](./Normalization.png)
 
 Quá trình chuẩn hóa mang tính **lũy tiến** (**Cumulative Hierarchy**): Để đạt được cấp độ chuẩn $N$, lược đồ trước hết bắt buộc phải thỏa mãn tất cả các điều kiện của cấp độ chuẩn $(N-1)$.
 
@@ -414,6 +467,22 @@ CREATE TABLE dbo.StudentTutors (
 1. Lược đồ đã đạt **BCNF**.
 2. **Không chứa hai hoặc nhiều mối quan hệ Đa trị (1-N) độc lập nhau trong cùng một bảng**.
    - Nếu tồn tại phụ thuộc đa trị $X \twoheadrightarrow Y$, thì $X$ phải là Super Key.
+
+#### Trực giác: Tại sao lại vi phạm?
+
+Quan sát hình minh họa bên dưới — bảng lưu đồng thời hai nhóm thông tin **hoàn toàn độc lập** về sinh viên:
+- **ITCerts**: Chứng chỉ công nghệ (AWS, Azure, GCP, ...)
+- **LanguageCerts**: Chứng chỉ ngoại ngữ (English, Spanish, Chinese, ...)
+
+$$\text{StudentID} \twoheadrightarrow \text{ITCerts} \quad \text{và} \quad \text{StudentID} \twoheadrightarrow \text{LanguageCerts}$$
+
+Ký hiệu $X \twoheadrightarrow Y$ (**Multi-Valued Dependency — MVD**) đọc là: "$X$ đa trị xác định $Y$". Nghĩa là: biết `StudentID`, ta xác định được **một tập nhiều giá trị** của `ITCerts` — không phải một giá trị duy nhất như FD thông thường. Hai tập này **độc lập nhau hoàn toàn** (có bằng AWS không hề ảnh hưởng đến việc biết tiếng Anh hay tiếng Tây Ban Nha).
+
+**Hệ quả:** Để biểu diễn đầy đủ mọi tổ hợp, số dòng cần thiết bằng $M \times N$ (**Tích Descartes — Cartesian Product**), trong đó $M$ là số chứng chỉ IT và $N$ là số ngoại ngữ.
+
+![Nguyên tắc 4 - Tránh "nô tổ hợp": mỗi dòng chỉ là một tổ hợp duy nhất của các thuộc tính liên quan](./Principle%204.png)
+
+> Hình trên minh họa chuỗi tổ hợp bùng nổ: Sinh viên A có AWS+English, Azure+English, AWS+Spanish, Azure+Spanish, ... — mỗi cặp `(ITCert × Language)` tạo ra một dòng riêng biệt, dù hai nhóm thuộc tính không hề liên quan.
 
 #### Ví dụ vi phạm 4NF: Bảng Kỹ năng Sinh viên (`Student_Profiles`)
 
