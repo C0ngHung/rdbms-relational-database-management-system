@@ -19,6 +19,8 @@
 
 ## 2. Các thay đổi gần đây / Recent Changes
 
+- **Part 1 - Các Khái Niệm Cơ Bản**:
+  - Bổ sung chú thích sư phạm bằng tiếng Anh (Picture captions: `*Figure 1*` → `*Figure 4*`) dưới 4 hình ảnh minh họa trong `Part 1 - Basic Concepts.md`.
 - **Part 2 - Chuẩn hóa CSDL (Standardization)**:
   - Khắc phục lỗi render công thức KaTeX tại §3.3 (Transitive Dependency) bằng cách chuyển sang ký hiệu thuộc tính PascalCase `\text{StudentID} \xrightarrow{(1)} \text{AvgScore} \xrightarrow{(2)} \text{AcademicRank}`, loại bỏ hoàn toàn lỗi xung đột ký tự thoát `'_' allowed only in math mode`.
   - Thêm chú thích sư phạm súc tích, giàu ý nghĩa (`*Picture 1*` đến `*Picture 12*`) dưới tất cả 12 hình ảnh minh họa trong `Part 2 - Standardization.md`.
