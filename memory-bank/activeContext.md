@@ -2,23 +2,29 @@
 
 ## 1. Trọng tâm hiện tại / Current Focus
 
-- Đã hoàn thành biên soạn và rà soát chuyên sâu bài học: **Part 2: Chuẩn Hóa Cơ Sở Dữ Liệu - Database Normalization** (tại `sql-server/Part 2 - Standardization/Part 2 - Standardization.md`).
-- Đã hoàn tất vá các lỗi SQL integrity (ràng buộc FK, Dependency Non-Preservation trong BCNF, phân định độc lập các ví dụ và lý do sử dụng `CASCADE`).
-- Đã tích hợp thành công **Section §7: Hands-on Lab** bao gồm:
-  - Bài mẫu giải chi tiết: Chuyển đổi bảng thô `RawEnrollments` (0NF) → 3NF (5 bảng chuẩn hóa theo thứ tự dependency).
-  - Đề bài thực hành cho Caelus: Chuyển đổi bảng thô `LibraryRaw` (0NF) → 3NF.
-- Chuẩn bị bước vào thực hành giải đề `LibraryRaw` (bước 1: phân tích vi phạm).
+- Đã hoàn thành cập nhật và biên soạn chuyên sâu tài liệu: **Part 2: Chuẩn Hóa Cơ Sở Dữ Liệu - Database Normalization** (`sql-server/Part 2 - Standardization/Part 2 - Standardization.md`).
+- Đã tích hợp đầy đủ 12 sơ đồ/hình ảnh minh họa trực quan cho toàn bộ Part 2:
+  - Sơ đồ CSDL chuẩn hóa mẫu (`CSDL Good.png`).
+  - 3 dạng bất thường hoạt động (`Insert Anomaly.png`, `Update Anomaly.png`, `Delete Anomaly.png`).
+  - Các nguyên tắc chuẩn hóa trực quan (`Principle 1.png`, `Principle 2.png`, `Principle 3.png`, `Principle 3.5.png`, `Principle 4.png`).
+  - 2 ví dụ thực tế về Phụ thuộc bắc cầu (`Example 1.png`, `Example 2.png`).
+  - Sơ đồ tiến trình chuẩn hóa lũy tiến (`Normalization.png`).
+- Đã bổ sung lý giải trực giác sâu sắc:
+  - §3.3 Phụ thuộc bắc cầu: Bảng `StudentGrades(student_id, avg_score, academic_rank)`, giải mã 2 chặng phụ thuộc, bất thường cập nhật khi sửa điểm, và 2 giải pháp (Bảng tra cứu độc lập vs Tính toán động qua `CASE WHEN`).
+  - §4.5 Chuẩn 4NF & Phụ thuộc đa trị (MVD): Giải mã hiện tượng bùng nổ tổ hợp tích Descartes ($M \times N$) khi gom 2 nhóm 1-N độc lập (`it_certification` và `spoken_language`).
+- Chuẩn bị tạo các commit phân tách theo từng file/tính năng, pull sync với remote main và push code.
 
 ---
 
 ## 2. Các thay đổi gần đây / Recent Changes
 
 - **Part 2 - Chuẩn hóa CSDL (Standardization)**:
-  - Trích xuất và tổng hợp transcript phụ đề tiếng Việt từ bài giảng video (`xO1DaEtHY_g`).
-  - Soạn thảo tài liệu chuẩn hóa 742 dòng bao quát từ 1NF đến 5NF, 3 dạng bất thường (Insert, Update, Delete Anomaly), phụ thuộc hàm (FD, partial, transitive), BCNF và Dependency Non-Preservation, phân rã quan hệ đa trị 4NF, và khuôn khổ đánh đổi phi chuẩn hóa (OLTP vs OLAP).
-  - Rà soát Diff-review chuyên sâu: phát hiện và khắc phục các thiếu sót FK ở bảng liên kết và làm rõ trade-off khi dừng ở 3NF vs lên BCNF.
-  - Bổ sung Section §7 Hands-on Lab với kịch bản di chuyển bảng thô thực tế và bài tập kiểm tra tư duy thiết kế.
+  - Bổ sung nội dung diễn giải chi tiết cho `Example 1.png` và `Example 2.png` tại mục §3.3 (Transitive Dependency), kèm `[!NOTE]` trỏ tới §4.3 mà không làm trùng lặp SQL.
+  - Điều chuyển `Principle 4.png` về đúng vị trí tại mục §4.5 (4NF), giải thích khái niệm Phụ thuộc đa trị $X \twoheadrightarrow Y$ và hiện tượng dư thừa tổ hợp.
+  - Chèn sơ đồ tổng quan `Normalization.png` ngay sau tiêu đề §4.
+  - Tích hợp và liên kết toàn bộ 12 hình ảnh minh họa chất lượng cao vào bài viết.
 - **Trước đó**:
+  - Soạn thảo tài liệu chuẩn hóa 742 dòng bao quát từ 1NF đến 5NF, Data Anomalies, Functional Dependencies, BCNF và Section §7 Hands-on Lab (`RawEnrollments` & `LibraryRaw`).
   - Hoàn thành bài học nền tảng `Part 1 - Basic Concepts` (463 dòng).
   - Thiết lập AG Kit, memory-bank, hook defense-in-depth, và quy chuẩn cam kết git.
 
@@ -29,26 +35,29 @@
 1. **Commit Convention**:
    - Thống nhất định dạng: `<type>[RDBMS-NNN]:[<scope>]:<message>`.
    - `RDBMS-001`: Part 1 Basic Concepts.
-   - `RDBMS-002`: Part 2 Database Normalization & Hands-on Lab.
-2. **PostgreSQL / SQL Server Compatibility**:
-   - Nội dung học tập tại thư mục `sql-server/` sử dụng cú pháp T-SQL/SQL Server chuẩn, đồng thời bảo đảm các nguyên lý quan hệ tương thích với PostgreSQL 16.
-3. **Rollback-First & Constraint Enforcement**:
-   - Mọi thiết kế bảng đều phải áp đặt ràng buộc toàn vẹn dữ liệu ở cấp CSDL (`PRIMARY KEY`, `FOREIGN KEY`, `UNIQUE`, `CHECK`, `NOT NULL`).
-   - Khai báo DDL theo đúng thứ tự phụ thuộc (bảng cha trước, bảng con sau).
+   - `RDBMS-002`: Part 2 Database Normalization, Assets & Hands-on Lab.
+2. **Không viết SQL ở Phần lý thuyết (§3)**:
+   - Phần §3 tập trung thuần túy vào bản chất toán học/logic của Phụ thuộc hàm (FD). Toàn bộ mã nguồn DDL/DQL và script tái cấu trúc được dồn về Phần §4 (Các Dạng Chuẩn Hóa) để giữ cấu trúc sư phạm trong sáng và tránh trùng lặp nội dung.
+3. **Vị trí hình ảnh tương ứng với nội dung khái niệm**:
+   - Mọi sơ đồ, hình ảnh minh họa phải đặt chính xác tại section giải thích khái niệm tương ứng (e.g. `Principle 4.png` về MVD phải nằm ở §4.5 4NF, không để ở §3).
+4. **PostgreSQL / SQL Server Compatibility**:
+   - Sử dụng cú pháp T-SQL/SQL Server chuẩn, đồng thời bảo đảm các nguyên lý quan hệ tương thích hoàn toàn với PostgreSQL 16.
 
 ---
 
 ## 4. Các bước tiếp theo / Next Steps
 
-1. **Hands-on Lab - Bài tập 2 (`LibraryRaw`)**:
-   - Caelus thực hiện Bước 1: Phân tích vi phạm 1NF, 2NF, 3NF trên bảng `LibraryRaw`.
-   - Review và phê duyệt thiết kế schema Bước 2.
-   - Hướng dẫn Caelus viết script DDL Bước 3 và kiểm thử.
-2. **Kế hoạch tiếp theo**:
-   - Chuyển sang Part 3 (các chủ đề nâng cao về ràng buộc, chỉ mục hoặc câu lệnh truy vấn).
+1. **Commit, Pull & Push**:
+   - Tạo các commit phân tách độc lập theo từng tính năng/tệp tin theo chuẩn `RDBMS-002`.
+   - Pull sync với remote `main` và push lên nhánh `main`.
+2. **Hands-on Lab - Bài tập 2 (`LibraryRaw`)**:
+   - Phân tích vi phạm 1NF, 2NF, 3NF trên bảng thô `LibraryRaw`.
+   - Thiết kế schema 3NF phân rã chuẩn tắc.
+   - Viết script DDL và nạp dữ liệu kiểm thử.
 
 ---
 
 ## 5. Vấn đề tồn đọng / Known Issues
 
-- Không có lỗi kỹ thuật tồn đọng. Tài liệu Part 2 và hạ tầng Memory Bank đều nhất quán, chuẩn xác.
+- Không có lỗi kỹ thuật tồn đọng. Toàn bộ tài liệu, liên kết hình ảnh và Memory Bank đều nhất quán, chuẩn xác.
+
