@@ -2,17 +2,9 @@
 
 ## 1. Trọng tâm hiện tại / Current Focus
 
-- Đã hoàn thành cập nhật và biên soạn chuyên sâu tài liệu: **Part 2: Chuẩn Hóa Cơ Sở Dữ Liệu - Database Normalization** (`sql-server/Part 2 - Standardization/Part 2 - Standardization.md`).
-- Đã tích hợp đầy đủ 12 sơ đồ/hình ảnh minh họa trực quan cho toàn bộ Part 2:
-  - Sơ đồ CSDL chuẩn hóa mẫu (`CSDL Good.png`).
-  - 3 dạng bất thường hoạt động (`Insert Anomaly.png`, `Update Anomaly.png`, `Delete Anomaly.png`).
-  - Các nguyên tắc chuẩn hóa trực quan (`Principle 1.png`, `Principle 2.png`, `Principle 3.png`, `Principle 3.5.png`, `Principle 4.png`).
-  - 2 ví dụ thực tế về Phụ thuộc bắc cầu (`Example 1.png`, `Example 2.png`).
-  - Sơ đồ tiến trình chuẩn hóa lũy tiến (`Normalization.png`).
-- Đã bổ sung lý giải trực giác sâu sắc:
-  - §3.3 Phụ thuộc bắc cầu: Bảng `StudentGrades(student_id, avg_score, academic_rank)`, giải mã 2 chặng phụ thuộc, bất thường cập nhật khi sửa điểm, và 2 giải pháp (Bảng tra cứu độc lập vs Tính toán động qua `CASE WHEN`).
-  - §4.5 Chuẩn 4NF & Phụ thuộc đa trị (MVD): Giải mã hiện tượng bùng nổ tổ hợp tích Descartes ($M \times N$) khi gom 2 nhóm 1-N độc lập (`it_certification` và `spoken_language`).
-- Đã bổ sung chú thích sư phạm bằng tiếng Anh (Figure captions: `*Figure 1*` → `*Figure 12*`) ngay dưới từng sơ đồ, giải nghĩa sâu sắc 4 tiêu chí CSDL tốt, cơ chế phát sinh 3 dạng bất thường dữ liệu, các nguyên tắc chuẩn hóa 1NF-4NF, và giải pháp triệt tiêu chuỗi bắc cầu/bùng nổ tích Descartes.
+- Đã hoàn tất việc trích xuất và biên dịch phụ đề video cho bài học **Part 3: Sơ đồ thực thể - quan hệ ERD** (`sql-server/Part 3 - Entity-Relationship Diagram (ERD)/Part 3 - Entity-Relationship Diagram (ERD).md`).
+- Đã cấu trúc lại nội dung thành các phần rõ ràng (ER Model là gì, Các thành phần chính, Ký pháp Chen, Ví dụ Quản lý thư viện).
+- Đã chèn thành công 12 hình ảnh minh họa trải đều từ `Figure 1` đến `Figure 12` kèm chú thích tiếng Anh chuẩn hóa để diễn giải trực quan khái niệm (Entity, Attribute, Relationship, Chen Notation) và phân tích sâu bài toán Quản lý thư viện.
 - Chuẩn bị tạo các commit phân tách theo từng file/tính năng, pull sync với remote main và push code.
 
 ---
